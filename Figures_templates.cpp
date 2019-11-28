@@ -1,3 +1,5 @@
+#ifndef __FIG_TEMPL__
+#define __FIG_TEMPL__
 #include<iostream>
 #include<cmath>
 //#include<string>
@@ -14,24 +16,12 @@ template <class T>
 				+ (p2.second-p1.second) * (p4.second-p3.second) )
 				/ ( length(p1, p2) * length( p3, p4) ); 
 }
-
-/*template <class T>	
-double square(std::pair<T, T> p1, std::pair<T, T> p2, std::pair<T, T> p3){
-		//пол кореня от ( произведение длин - скалярное произведение )
-			return 0.5*sqrt(
-		  	 ( (p2.first-p1.first) * (p2.first-p1.first) + (p2.second-p1.second) * (p2.second-p1.second) )
-			*( (p3.first-p1.firts) * (p3.first-p1.firts) + (p3.second-p1.second) * (p3.second-p1.second) )
-			-( (p2.first-p1.firts) * (p3.first-p1.firts) + (p2.second-p1.second) * (p3.second-p1.second) )
-			*( (p2.first-p1.firts) * (p3.first-p1.firts) + (p3.second-p1.second) * (p2.second-p1.second) ) 
-			);
-		}
-*/
 template <class T>
 class Square{
 public:
 	using type = T;
 	using vertex = std::pair<T, T>;
-	vertex p1, p2;
+	vertex p1={}, p2={};
 	Square(vertex a, vertex b){
 		if(a.first!=b.first || a.second!=b.second){
 			p1 = a; 
@@ -45,7 +35,7 @@ class Rectangle{
 public:
 	using type = T;
 	using vertex = std::pair<T, T>;
-	vertex p1, p2, p3;
+	vertex p1 ={}, p2 ={} ,  p3 = {};
 	Rectangle(vertex a, vertex b, vertex c){
 		if( (a.first!=b.first || a.second!=b.second)
 		 && (c.first!=b.first || c.second!=b.second)
@@ -63,7 +53,7 @@ class Trapeze{
 public:
 	using type =T;
 	using vertex= std::pair<T, T>;
-	vertex p1, p2, p3, p4;
+	vertex p1={}, p2={}, p3={}, p4={};
 	Trapeze(vertex a, vertex b, vertex c, vertex d){
 		if( ( ( length(a, b) - length(c, d)<=1e-9) && ( length(a, b) - length(c, d)>=-1e-9 ) )
 		&&!( (length(a, b) <= 1e-9) && (length(a, b) >= -1e-9) ) 
@@ -177,8 +167,9 @@ void print_info(Trapeze<T> a){
 		<<"square: "<<square(a)<<" ."<<std::endl
 		<<"center:"<<center(a)<<'.'<<std::endl;
 }
-
+//classic classes ^^^
 //=============================================================
+//tuples   vvv
 
 template <class T>
 double square( std::tuple<std::pair<T, T>, std::pair<T, T>> a){
@@ -252,7 +243,7 @@ std::pair<T, T> center(std::tuple<std::pair<T, T>, std::pair<T, T>, std::pair<T,
 				 ( std::get<0>(a).second + std::get<2>(a).second ) / 2 
 			};
 		}
-		return std::pair{0.0, 0.0};
+		return std::pair<T, T>{0.0, 0.0};
 }
 
 template <class T>
@@ -270,12 +261,13 @@ std::pair<T, T> center( std::tuple<std::pair<T, T>, std::pair<T, T>, std::pair<T
 			 (std::get<0>(a).second+ std::get<1>(a).second+ std::get<2>(a).second+ std::get<3>(a).second)/4 
 		};
 	}
-	return std::pair{0.01, 0.01};
+	return std::pair<T, T>{0.0, 0.0};
 }
 
 template <class T>
 void print_info(std::tuple<std::pair<T, T>, std::pair<T, T>> a){
-	std::cout<<"It's Square."<<std::endl
+	if(std::get<0>(a).first!=std::get<1>(a).first || std::get<0>(a).second!=std::get<1>(a).second){
+		std::cout<<"It's Square."<<std::endl
 		<<"vertexes:"<<std::endl
 		<<std::get<0>(a)<<';'<<std::pair<T, T>{
 			-std::get<1>(a).second + (std::get<1>(a).second + std::get<0>(a).second + std::get<1>(a).first + std::get<0>(a).first)/2, 
@@ -287,11 +279,19 @@ void print_info(std::tuple<std::pair<T, T>, std::pair<T, T>> a){
 		}<<'.'<<std::endl
 		<<"square: "<<square(a)<<" ."<<std::endl
 		<<"center:"<<center(a)<<'.'<<std::endl;
+	}else{
+		std::cout<<"It's Square."<<std::endl;
+	}
 }
 
 template <class T>
 void print_info(std::tuple<std::pair<T, T>, std::pair<T, T>, std::pair<T, T>> a){
-	std::cout<<"It's Rectangle."<<std::endl
+	if( (std::get<0>(a).first!=std::get<1>(a).first || std::get<0>(a).second!=std::get<1>(a).second)
+	 && (std::get<2>(a).first!=std::get<1>(a).first || std::get<2>(a).second!=std::get<1>(a).second)
+	 && (std::get<0>(a).first!=std::get<2>(a).first || std::get<0>(a).second!=std::get<2>(a).second) 
+	 && (cos(std::get<0>(a), std::get<1>(a), std::get<1>(a), std::get<2>(a))<=1e-9 
+	 && cos(std::get<0>(a), std::get<1>(a), std::get<1>(a), std::get<2>(a))>=-1e-9) ) {
+		std::cout<<"It's Rectangle."<<std::endl
 		<<"vertexes:"<<std::endl
 		<<std::get<0>(a)<<';'<<std::get<1>(a)<<';'<<std::get<2>(a)<<';'<<std::pair<T, T>{
 			std::get<2>(a).first-std::get<1>(a).first+std::get<0>(a).first,
@@ -299,13 +299,27 @@ void print_info(std::tuple<std::pair<T, T>, std::pair<T, T>, std::pair<T, T>> a)
 		}<<'.'<<std::endl
 		<<"square: "<<square(a)<<" ."<<std::endl
 		<<"center:"<<center(a)<<'.'<<std::endl;
+	}else{
+		std::cout<<"It's not Rectangle."<<std::endl;
+	}
 }
 
 template <class T>
 void print_info(std::tuple<std::pair<T, T>, std::pair<T, T>, std::pair<T, T>, std::pair<T, T>> a){
-	std::cout<<"It's Trapeze."<<std::endl
+	if( ( ( length(std::get<0>(a), std::get<1>(a)) - length(std::get<2>(a), std::get<3>(a)) <= 1e-9 ) 
+	&& ( length(std::get<0>(a), std::get<1>(a)) - length(std::get<2>(a), std::get<3>(a)) ) >=-1e-9 )
+	&&!( (length(std::get<0>(a), std::get<1>(a)) <= 1e-9) && (length(std::get<0>(a), std::get<1>(a)) >= -1e-9) ) 
+	&& ( ( (cos(std::get<0>(a), std::get<3>(a), std::get<2>(a), std::get<1>(a)) <= 1+1e-9) 
+	&& (cos(std::get<0>(a), std::get<3>(a), std::get<2>(a), std::get<1>(a)) >= 1-1e-9) ) 
+	|| ( (cos(std::get<0>(a), std::get<3>(a), std::get<2>(a), std::get<1>(a)) <= -1+1e-9) 
+	&& (cos(std::get<0>(a), std::get<3>(a), std::get<2>(a), std::get<1>(a)) >= -1-1e-9) ) ) ) {
+		std::cout<<"It's Trapeze."<<std::endl
 		<<"vertexes:"<<std::endl
 		<<std::get<0>(a)<<';'<<std::get<1>(a)<<';'<<std::get<2>(a)<<';'<<std::get<3>(a)<<'.'<<std::endl
 		<<"square: "<<square(a)<<" ."<<std::endl
 		<<"center:"<<center(a)<<'.'<<std::endl;
+	}else{
+			std::cout<<"It's not Trapeze."<<std::endl;	
+	}
 }
+#endif
